@@ -1,0 +1,439 @@
+# XGIMI Sunlight dashboard
+#
+# Install: copy this file into the Home Assistant configuration directory
+# (next to configuration.yaml) and register it there:
+#
+#   lovelace:
+#     dashboards:
+#       xgimi-lamp:
+#         mode: yaml
+#         title: XGIMI Sunlight
+#         icon: mdi:lamp
+#         show_in_sidebar: true
+#         filename: xgimi_dashboard.yaml
+#
+# Entity ids derive from the device name: the default name "XGIMI Sunlight"
+# gives the xgimi_sunlight prefix used below. Rename the device and you must
+# replace that prefix everywhere.
+#
+# Layout notes:
+# * The view is a sections view and every top-level card sets `column_span: 4`;
+#   without it the section lays the cards side by side and squeezes the remote.
+# * The 15 remote keys and 3 quick actions share one 3-column grid, plus a
+#   capture and a screen-off button on the last row.
+# * Tap a key for a click, hold it for a long press.
+# * Only the custom mode carries the brightness and colour temperature sliders:
+#   the device treats both as custom-mode parameters.
+
+title: XGIMI Sunlight
+views:
+  - title: Control
+    path: main
+    icon: mdi:lamp
+    type: sections
+    max_columns: 4
+    sections:
+      - type: grid
+        column_span: 4
+        cards:
+          # ---- overview ----
+          - type: grid
+            column_span: 4
+            columns: 2
+            square: false
+            cards:
+              - type: tile
+                entity: switch.xgimi_sunlight_lamp
+                name: Lamp
+                icon: mdi:desk-lamp
+                vertical: true
+                features:
+                  - type: toggle
+              - type: tile
+                entity: switch.xgimi_sunlight_projector
+                name: Projector
+                icon: mdi:projector
+                vertical: true
+                features:
+                  - type: toggle
+
+          # ---- lamp modes ----
+          - type: heading
+            heading: Lamp modes
+            icon: mdi:lightbulb-group
+
+          # Custom mode with the sliders on the left, the three presets stacked on the right.
+          - type: horizontal-stack
+            column_span: 4
+            cards:
+              - type: tile
+                entity: light.xgimi_sunlight_custom_lamp
+                name: Custom
+                icon: mdi:tune-variant
+                features:
+                  - type: light-brightness
+                  - type: light-color-temp
+              - type: vertical-stack
+                cards:
+                  - type: tile
+                    entity: light.xgimi_sunlight_rhythm_lamp
+                    name: Rhythm
+                    icon: mdi:sine-wave
+                  - type: tile
+                    entity: light.xgimi_sunlight_daylight_lamp
+                    name: Daylight
+                    icon: mdi:white-balance-sunny
+                  - type: tile
+                    entity: light.xgimi_sunlight_movie_lamp
+                    name: Movie
+                    icon: mdi:movie-open
+
+          # ---- live screen ----
+          - type: heading
+            heading: Screen
+            icon: mdi:projector-screen
+
+          - type: vertical-stack
+            column_span: 4
+            cards:
+            - type: markdown
+              column_span: 4
+              content: >-
+                {% set shot = state_attr('camera.xgimi_sunlight_screen', 'last_screen_url') %}
+                {% if shot %}
+                <a href="{{ shot }}" target="_blank" rel="noopener"><img src="{{ shot }}" alt="" style="width:100%;display:block;border-radius:12px"></a>
+                {% else %}
+                <div style="height:0"></div>
+                {% endif %}
+
+            - type: entities
+              column_span: 4
+              entities:
+                - type: button
+                  name: Capture a frame
+                  icon: mdi:camera-iris
+                  action_name: Capture
+                  tap_action:
+                    action: perform-action
+                    perform_action: xgimi_sunlight.screenshot
+                  hold_action:
+                    action: none
+
+          # ---- remote ----
+          - type: heading
+            heading: Remote
+            icon: mdi:remote
+
+          # One 3-column grid holds the whole remote:
+          #   power | empty | power menu
+          #   back  | up    | menu
+          #   left  | ok    | right
+          #   home  | down  | settings
+          #   vol - | mute  | vol +
+          #   auto focus | screenshot | screen off
+          - type: grid
+            column_span: 4
+            columns: 3
+            square: false
+            cards:
+              - type: button
+                name: Power
+                icon: mdi:power
+                tap_action:
+                  action: perform-action
+                  perform_action: xgimi_sunlight.press_key
+                  data:
+                    key: power
+                hold_action:
+                  action: perform-action
+                  perform_action: xgimi_sunlight.press_key
+                  data:
+                    key: power
+                    hold_secs: 1
+              - type: vertical-stack
+                cards: []
+              - type: button
+                entity: button.xgimi_sunlight_power_menu
+                name: Power menu
+                icon: mdi:power-settings
+                tap_action:
+                  action: perform-action
+                  perform_action: button.press
+                  target:
+                    entity_id: button.xgimi_sunlight_power_menu
+                hold_action:
+                  action: none
+
+              - type: button
+                name: Settings
+                icon: mdi:cog
+                tap_action:
+                  action: perform-action
+                  perform_action: xgimi_sunlight.press_key
+                  data:
+                    key: settings
+                hold_action:
+                  action: perform-action
+                  perform_action: xgimi_sunlight.press_key
+                  data:
+                    key: settings
+                    hold_secs: 1
+
+              - type: button
+                name: Up
+                icon: mdi:arrow-up-bold
+                tap_action:
+                  action: perform-action
+                  perform_action: xgimi_sunlight.press_key
+                  data:
+                    key: up
+                hold_action:
+                  action: perform-action
+                  perform_action: xgimi_sunlight.press_key
+                  data:
+                    key: up
+                    hold_secs: 1
+              - type: button
+                name: Menu
+                icon: mdi:menu
+                tap_action:
+                  action: perform-action
+                  perform_action: xgimi_sunlight.press_key
+                  data:
+                    key: menu
+                hold_action:
+                  action: perform-action
+                  perform_action: xgimi_sunlight.press_key
+                  data:
+                    key: menu
+                    hold_secs: 1
+
+              - type: button
+                name: Left
+                icon: mdi:arrow-left-bold
+                tap_action:
+                  action: perform-action
+                  perform_action: xgimi_sunlight.press_key
+                  data:
+                    key: left
+                hold_action:
+                  action: perform-action
+                  perform_action: xgimi_sunlight.press_key
+                  data:
+                    key: left
+                    hold_secs: 1
+              - type: button
+                name: OK
+                icon: mdi:circle-double
+                tap_action:
+                  action: perform-action
+                  perform_action: xgimi_sunlight.press_key
+                  data:
+                    key: ok
+                hold_action:
+                  action: perform-action
+                  perform_action: xgimi_sunlight.press_key
+                  data:
+                    key: ok
+                    hold_secs: 1
+              - type: button
+                name: Right
+                icon: mdi:arrow-right-bold
+                tap_action:
+                  action: perform-action
+                  perform_action: xgimi_sunlight.press_key
+                  data:
+                    key: right
+                hold_action:
+                  action: perform-action
+                  perform_action: xgimi_sunlight.press_key
+                  data:
+                    key: right
+                    hold_secs: 1
+
+              - type: button
+                name: Back
+                icon: mdi:arrow-u-left-top
+                tap_action:
+                  action: perform-action
+                  perform_action: xgimi_sunlight.press_key
+                  data:
+                    key: back
+                hold_action:
+                  action: perform-action
+                  perform_action: xgimi_sunlight.press_key
+                  data:
+                    key: back
+                    hold_secs: 1
+              - type: button
+                name: Down
+                icon: mdi:arrow-down-bold
+                tap_action:
+                  action: perform-action
+                  perform_action: xgimi_sunlight.press_key
+                  data:
+                    key: down
+                hold_action:
+                  action: perform-action
+                  perform_action: xgimi_sunlight.press_key
+                  data:
+                    key: down
+                    hold_secs: 1
+              - type: button
+                name: Home
+                icon: mdi:home
+                tap_action:
+                  action: perform-action
+                  perform_action: xgimi_sunlight.press_key
+                  data:
+                    key: home
+                hold_action:
+                  action: perform-action
+                  perform_action: xgimi_sunlight.press_key
+                  data:
+                    key: home
+                    hold_secs: 1
+              - type: button
+                name: Volume -
+                icon: mdi:volume-minus
+                tap_action:
+                  action: perform-action
+                  perform_action: xgimi_sunlight.press_key
+                  data:
+                    key: volume_down
+                hold_action:
+                  action: perform-action
+                  perform_action: xgimi_sunlight.press_key
+                  data:
+                    key: volume_down
+                    hold_secs: 1
+              - type: button
+                entity: button.xgimi_sunlight_mute
+                name: Mute
+                icon: mdi:volume-mute
+                tap_action:
+                  action: perform-action
+                  perform_action: button.press
+                  target:
+                    entity_id: button.xgimi_sunlight_mute
+                hold_action:
+                  action: none
+              - type: button
+                name: Volume +
+                icon: mdi:volume-plus
+                tap_action:
+                  action: perform-action
+                  perform_action: xgimi_sunlight.press_key
+                  data:
+                    key: volume_up
+                hold_action:
+                  action: perform-action
+                  perform_action: xgimi_sunlight.press_key
+                  data:
+                    key: volume_up
+                    hold_secs: 1
+
+              # Quick actions share the last row of the same grid.
+              - type: button
+                entity: button.xgimi_sunlight_auto_focus
+                name: Auto focus
+                icon: mdi:focus-field
+                tap_action:
+                  action: perform-action
+                  perform_action: button.press
+                  target:
+                    entity_id: button.xgimi_sunlight_auto_focus
+                hold_action:
+                  action: none
+              - type: button
+                entity: button.xgimi_sunlight_screenshot
+                name: Screenshot
+                icon: mdi:camera
+                tap_action:
+                  action: perform-action
+                  perform_action: button.press
+                  target:
+                    entity_id: button.xgimi_sunlight_screenshot
+                hold_action:
+                  action: none
+              - type: button
+                entity: button.xgimi_sunlight_screen_off
+                name: Screen off
+                icon: mdi:monitor-off
+                tap_action:
+                  action: perform-action
+                  perform_action: button.press
+                  target:
+                    entity_id: button.xgimi_sunlight_screen_off
+                hold_action:
+                  action: none
+          # ---- input and playback ----
+          - type: heading
+            heading: Input and playback
+            icon: mdi:form-textbox
+            column_span: 4
+
+          - type: entities
+            column_span: 4
+            entities:
+              - type: section
+                label: Custom command
+              - entity: text.xgimi_sunlight_command
+                name: Command
+                icon: mdi:console-line
+              - type: button
+                name: Send command
+                icon: mdi:send
+                action_name: Send
+                tap_action:
+                  action: perform-action
+                  perform_action: button.press
+                  target:
+                    entity_id: button.xgimi_sunlight_send_command
+                hold_action:
+                  action: none
+
+              - type: section
+                label: Media
+              - entity: text.xgimi_sunlight_media
+                name: URL or path
+                icon: mdi:link-variant
+              - type: button
+                name: Play media
+                icon: mdi:play
+                action_name: Play
+                tap_action:
+                  action: perform-action
+                  perform_action: button.press
+                  target:
+                    entity_id: button.xgimi_sunlight_play_media
+                hold_action:
+                  action: none
+              - type: button
+                name: Stop media
+                icon: mdi:stop
+                action_name: Stop
+                tap_action:
+                  action: perform-action
+                  perform_action: button.press
+                  target:
+                    entity_id: button.xgimi_sunlight_stop_media
+                hold_action:
+                  action: none
+
+              - type: section
+                label: Apps
+              - entity: select.xgimi_sunlight_app
+                name: App
+                icon: mdi:apps
+              - type: button
+                name: Open app
+                icon: mdi:open-in-new
+                action_name: Open
+                tap_action:
+                  action: perform-action
+                  perform_action: button.press
+                  target:
+                    entity_id: button.xgimi_sunlight_open_app
+                hold_action:
+                  action: none

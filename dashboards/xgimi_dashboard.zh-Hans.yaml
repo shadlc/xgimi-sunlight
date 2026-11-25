@@ -1,0 +1,435 @@
+# 极米神灯 · 仪表盘
+#
+# 安装：把本文件放到 HA 配置目录（与 configuration.yaml 同级），再注册：
+#
+#   lovelace:
+#     dashboards:
+#       xgimi-lamp:
+#         mode: yaml
+#         title: 极米神灯
+#         icon: mdi:lamp
+#         show_in_sidebar: true
+#         filename: xgimi_dashboard.zh-Hans.yaml
+#
+# 实体 ID 由设备名生成：默认名 XGIMI Sunlight 对应前缀 xgimi_sunlight。
+# 改过设备名的话，把下面所有实体 ID 的前缀换成你自己的。
+#
+# 布局要点：
+# * 视图用 sections，每个顶层卡片写 `column_span: 4`，否则卡片会并排挤在一起。
+# * 遥控器 15 个键 + 3 个快捷动作共用一张 3 列 grid，最后一行再补抓图与熄屏。
+# * 点按 = 短按，长按 = 按住不放。
+# * 只有「自定义」模式带亮度/色温滑条：设备把这两项当作自定义模式参数，
+#   在预设模式下调它们会切回自定义。
+
+title: 极米神灯
+views:
+  - title: 控制
+    path: main
+    icon: mdi:lamp
+    type: sections
+    max_columns: 4
+    sections:
+      - type: grid
+        column_span: 4
+        cards:
+          # ---- 总览 ----
+          - type: grid
+            column_span: 4
+            columns: 2
+            square: false
+            cards:
+              - type: tile
+                entity: switch.xgimi_sunlight_lamp
+                name: 灯
+                icon: mdi:desk-lamp
+                vertical: true
+                features:
+                  - type: toggle
+              - type: tile
+                entity: switch.xgimi_sunlight_projector
+                name: 投影仪
+                icon: mdi:projector
+                vertical: true
+                features:
+                  - type: toggle
+
+          # ---- 灯光模式 ----
+          - type: heading
+            heading: 灯光模式
+            icon: mdi:lightbulb-group
+
+          # 左边是唯一带亮度/色温滑条的自定义模式，右边竖排另外三种模式。
+          - type: horizontal-stack
+            column_span: 4
+            cards:
+              - type: tile
+                entity: light.xgimi_sunlight_custom_lamp
+                name: 自定义
+                icon: mdi:tune-variant
+                features:
+                  - type: light-brightness
+                  - type: light-color-temp
+              - type: vertical-stack
+                cards:
+                  - type: tile
+                    entity: light.xgimi_sunlight_rhythm_lamp
+                    name: 节律光
+                    icon: mdi:sine-wave
+                  - type: tile
+                    entity: light.xgimi_sunlight_daylight_lamp
+                    name: 日光
+                    icon: mdi:white-balance-sunny
+                  - type: tile
+                    entity: light.xgimi_sunlight_movie_lamp
+                    name: 观影
+                    icon: mdi:movie-open
+
+          # ---- 实时画面 ----
+          - type: heading
+            heading: 投影画面
+            icon: mdi:projector-screen
+
+          - type: vertical-stack
+            column_span: 4
+            cards:
+            - type: markdown
+              column_span: 4
+              content: >-
+                {% set shot = state_attr('camera.xgimi_sunlight_screen', 'last_screen_url') %}
+                {% if shot %}
+                <a href="{{ shot }}" target="_blank" rel="noopener"><img src="{{ shot }}" alt="" style="width:100%;display:block;border-radius:12px"></a>
+                {% else %}
+                <div style="height:0"></div>
+                {% endif %}
+
+            - type: entities
+              column_span: 4
+              entities:
+                - type: button
+                  name: 截一帧
+                  icon: mdi:camera-iris
+                  action_name: 截图
+                  tap_action:
+                    action: perform-action
+                    perform_action: xgimi_sunlight.screenshot
+                  hold_action:
+                    action: none
+
+          # ---- 遥控器 ----
+          - type: heading
+            heading: 遥控器
+            icon: mdi:remote
+
+          # 一张 3 列网格装下整个遥控器：
+          #   电源 | 空 | 关机菜单
+          #   设置 | 上 | 菜单
+          #   左   | 确定 | 右
+          #   返回 | 下 | 主页
+          #   音量- | 静音 | 音量+
+          #   自动对焦 | 截图 | 熄屏
+          - type: grid
+            column_span: 4
+            columns: 3
+            square: false
+            cards:
+              - type: button
+                name: 电源
+                icon: mdi:power
+                tap_action:
+                  action: perform-action
+                  perform_action: xgimi_sunlight.press_key
+                  data:
+                    key: power
+                hold_action:
+                  action: perform-action
+                  perform_action: xgimi_sunlight.press_key
+                  data:
+                    key: power
+                    hold_secs: 1
+              - type: vertical-stack
+                cards: []
+              - type: button
+                entity: button.xgimi_sunlight_power_menu
+                name: 关机菜单
+                icon: mdi:power-settings
+                tap_action:
+                  action: perform-action
+                  perform_action: button.press
+                  target:
+                    entity_id: button.xgimi_sunlight_power_menu
+                hold_action:
+                  action: none
+
+              - type: button
+                name: 设置
+                icon: mdi:cog
+                tap_action:
+                  action: perform-action
+                  perform_action: xgimi_sunlight.press_key
+                  data:
+                    key: settings
+                hold_action:
+                  action: perform-action
+                  perform_action: xgimi_sunlight.press_key
+                  data:
+                    key: settings
+                    hold_secs: 1
+
+              - type: button
+                name: 上
+                icon: mdi:arrow-up-bold
+                tap_action:
+                  action: perform-action
+                  perform_action: xgimi_sunlight.press_key
+                  data:
+                    key: up
+                hold_action:
+                  action: perform-action
+                  perform_action: xgimi_sunlight.press_key
+                  data:
+                    key: up
+                    hold_secs: 1
+              - type: button
+                name: 菜单
+                icon: mdi:menu
+                tap_action:
+                  action: perform-action
+                  perform_action: xgimi_sunlight.press_key
+                  data:
+                    key: menu
+                hold_action:
+                  action: perform-action
+                  perform_action: xgimi_sunlight.press_key
+                  data:
+                    key: menu
+                    hold_secs: 1
+
+              - type: button
+                name: 左
+                icon: mdi:arrow-left-bold
+                tap_action:
+                  action: perform-action
+                  perform_action: xgimi_sunlight.press_key
+                  data:
+                    key: left
+                hold_action:
+                  action: perform-action
+                  perform_action: xgimi_sunlight.press_key
+                  data:
+                    key: left
+                    hold_secs: 1
+              - type: button
+                name: 确定
+                icon: mdi:circle-double
+                tap_action:
+                  action: perform-action
+                  perform_action: xgimi_sunlight.press_key
+                  data:
+                    key: ok
+                hold_action:
+                  action: perform-action
+                  perform_action: xgimi_sunlight.press_key
+                  data:
+                    key: ok
+                    hold_secs: 1
+              - type: button
+                name: 右
+                icon: mdi:arrow-right-bold
+                tap_action:
+                  action: perform-action
+                  perform_action: xgimi_sunlight.press_key
+                  data:
+                    key: right
+                hold_action:
+                  action: perform-action
+                  perform_action: xgimi_sunlight.press_key
+                  data:
+                    key: right
+                    hold_secs: 1
+
+              - type: button
+                name: 返回
+                icon: mdi:arrow-u-left-top
+                tap_action:
+                  action: perform-action
+                  perform_action: xgimi_sunlight.press_key
+                  data:
+                    key: back
+                hold_action:
+                  action: perform-action
+                  perform_action: xgimi_sunlight.press_key
+                  data:
+                    key: back
+                    hold_secs: 1
+              - type: button
+                name: 下
+                icon: mdi:arrow-down-bold
+                tap_action:
+                  action: perform-action
+                  perform_action: xgimi_sunlight.press_key
+                  data:
+                    key: down
+                hold_action:
+                  action: perform-action
+                  perform_action: xgimi_sunlight.press_key
+                  data:
+                    key: down
+                    hold_secs: 1
+              - type: button
+                name: 主页
+                icon: mdi:home
+                tap_action:
+                  action: perform-action
+                  perform_action: xgimi_sunlight.press_key
+                  data:
+                    key: home
+                hold_action:
+                  action: perform-action
+                  perform_action: xgimi_sunlight.press_key
+                  data:
+                    key: home
+                    hold_secs: 1
+              - type: button
+                name: 音量 -
+                icon: mdi:volume-minus
+                tap_action:
+                  action: perform-action
+                  perform_action: xgimi_sunlight.press_key
+                  data:
+                    key: volume_down
+                hold_action:
+                  action: perform-action
+                  perform_action: xgimi_sunlight.press_key
+                  data:
+                    key: volume_down
+                    hold_secs: 1
+              - type: button
+                entity: button.xgimi_sunlight_mute
+                name: 静音
+                icon: mdi:volume-mute
+                tap_action:
+                  action: perform-action
+                  perform_action: button.press
+                  target:
+                    entity_id: button.xgimi_sunlight_mute
+                hold_action:
+                  action: none
+              - type: button
+                name: 音量 +
+                icon: mdi:volume-plus
+                tap_action:
+                  action: perform-action
+                  perform_action: xgimi_sunlight.press_key
+                  data:
+                    key: volume_up
+                hold_action:
+                  action: perform-action
+                  perform_action: xgimi_sunlight.press_key
+                  data:
+                    key: volume_up
+                    hold_secs: 1
+
+              # 快捷动作直接跟在同一张网格的最后一行，不再单独成卡。
+              - type: button
+                entity: button.xgimi_sunlight_auto_focus
+                name: 自动对焦
+                icon: mdi:focus-field
+                tap_action:
+                  action: perform-action
+                  perform_action: button.press
+                  target:
+                    entity_id: button.xgimi_sunlight_auto_focus
+                hold_action:
+                  action: none
+              - type: button
+                entity: button.xgimi_sunlight_screenshot
+                name: 截图
+                icon: mdi:camera
+                tap_action:
+                  action: perform-action
+                  perform_action: button.press
+                  target:
+                    entity_id: button.xgimi_sunlight_screenshot
+                hold_action:
+                  action: none
+              - type: button
+                entity: button.xgimi_sunlight_screen_off
+                name: 熄屏
+                icon: mdi:monitor-off
+                tap_action:
+                  action: perform-action
+                  perform_action: button.press
+                  target:
+                    entity_id: button.xgimi_sunlight_screen_off
+                hold_action:
+                  action: none
+          # ---- 输入与播放 ----
+          - type: heading
+            heading: 输入与播放
+            icon: mdi:form-textbox
+            column_span: 4
+
+          - type: entities
+            column_span: 4
+            entities:
+              - type: section
+                label: 自定义命令
+              - entity: text.xgimi_sunlight_command
+                name: 命令内容
+                icon: mdi:console-line
+              - type: button
+                name: 发送命令
+                icon: mdi:send
+                action_name: 发送
+                tap_action:
+                  action: perform-action
+                  perform_action: button.press
+                  target:
+                    entity_id: button.xgimi_sunlight_send_command
+                hold_action:
+                  action: none
+
+              - type: section
+                label: 媒体
+              - entity: text.xgimi_sunlight_media
+                name: 地址或路径
+                icon: mdi:link-variant
+              - type: button
+                name: 播放媒体
+                icon: mdi:play
+                action_name: 播放
+                tap_action:
+                  action: perform-action
+                  perform_action: button.press
+                  target:
+                    entity_id: button.xgimi_sunlight_play_media
+                hold_action:
+                  action: none
+              - type: button
+                name: 停止播放
+                icon: mdi:stop
+                action_name: 停止
+                tap_action:
+                  action: perform-action
+                  perform_action: button.press
+                  target:
+                    entity_id: button.xgimi_sunlight_stop_media
+                hold_action:
+                  action: none
+
+              - type: section
+                label: 应用
+              - entity: select.xgimi_sunlight_app
+                name: 应用
+                icon: mdi:apps
+              - type: button
+                name: 打开应用
+                icon: mdi:open-in-new
+                action_name: 打开
+                tap_action:
+                  action: perform-action
+                  perform_action: button.press
+                  target:
+                    entity_id: button.xgimi_sunlight_open_app
+                hold_action:
+                  action: none

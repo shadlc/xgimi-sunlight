@@ -1,0 +1,11 @@
+{
+  "name": "XGIMI Sunlight",
+  "content_in_root": false,
+  "render_readme": true,
+  "homeassistant": "2024.10.0",
+  "zip_release": true,
+  "filename": "xgimi_sunlight.zip",
+  "country": [
+    "CN"
+  ]
+}

@@ -1,0 +1,75 @@
+{
+  "entity": {
+    "button": {
+      "key_press": {
+        "default": "mdi:gesture-tap"
+      },
+      "key_hold": {
+        "default": "mdi:gesture-tap-hold"
+      },
+      "open_app": {
+        "default": "mdi:apps"
+      },
+      "exit_music": {
+        "default": "mdi:music-off"
+      },
+      "send_command": {
+        "default": "mdi:send"
+      },
+      "play_media": {
+        "default": "mdi:play"
+      },
+      "stop_media": {
+        "default": "mdi:stop"
+      }
+    },
+    "camera": {
+      "screen": {
+        "default": "mdi:projector-screen"
+      }
+    },
+    "light": {
+      "lamp_custom": {
+        "default": "mdi:tune-variant"
+      },
+      "lamp_daylight": {
+        "default": "mdi:weather-sunny"
+      },
+      "lamp_rhythm": {
+        "default": "mdi:sine-wave"
+      },
+      "lamp_movie": {
+        "default": "mdi:movie-open"
+      }
+    },
+    "number": {
+      "volume": {
+        "default": "mdi:volume-high"
+      }
+    },
+    "select": {
+      "key_select": {
+        "default": "mdi:gesture-tap-button"
+      },
+      "app": {
+        "default": "mdi:apps"
+      }
+    },
+    "switch": {
+      "projector": {
+        "default": "mdi:projector"
+      },
+      "lamp": {
+        "default": "mdi:desk-lamp"
+      }
+    },
+    "text": {
+      "command": {
+        "default": "mdi:console-line"
+      },
+      "media": {
+        "default": "mdi:play-box-multiple-outline"
+      }
+    }
+  }
+}

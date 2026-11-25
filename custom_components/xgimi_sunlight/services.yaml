@@ -1,0 +1,147 @@
+send_command:
+  name: Send command
+  description: Hand text to the device voice assistant.
+  fields:
+    command:
+      name: Command
+      description: Text the device voice assistant interprets.
+      required: true
+      selector:
+        text:
+    host:
+      name: Host
+      description: Target a specific device when more than one is configured.
+      required: false
+      example: 192.168.1.50
+      selector:
+        text:
+    wait_response:
+      name: Wait for a reply
+      description: Wait for the device acknowledgement before returning.
+      required: false
+      default: true
+      selector:
+        boolean:
+
+press_key:
+  name: Press key
+  description: Press a remote-control key, optionally as a long press.
+  fields:
+    key:
+      name: Key
+      description: Key name, for example `ok` or `volume_up`.
+      required: true
+      example: ok
+      selector:
+        select:
+          options:
+            - left
+            - right
+            - up
+            - down
+            - ok
+            - back
+            - menu
+            - home
+            - volume_up
+            - volume_down
+            - power
+            - settings
+            - auto_focus
+            - screenshot
+            - power_menu
+    hold_secs:
+      name: Hold
+      description: Send a long press instead of a single click.
+      required: false
+      default: 0
+      selector:
+        number:
+          min: 0
+          max: 10
+          step: 0.1
+          unit_of_measurement: seconds
+    host:
+      name: Host
+      description: Target a specific device when more than one is configured.
+      required: false
+      example: 192.168.1.50
+      selector:
+        text:
+play_media:
+  name: Play media
+  description: Play one image, video or audio track through the device DLNA renderer.
+    Leave both source fields empty to replay the last item.
+  fields:
+    url:
+      name: Media URL
+      description: Public address the device should download.
+      required: false
+      example: http://192.168.1.10:8123/local/clip.mp4
+      selector:
+        text:
+    path:
+      name: Local file
+      description: File on the Home Assistant host, served with a random token. Absolute, or
+        `media/…` / `www/…` relative.
+      required: false
+      example: /config/www/clip.mp4
+      selector:
+        text:
+    host:
+      name: Host
+      description: Target a specific device when more than one is configured.
+      required: false
+      example: 192.168.1.50
+      selector:
+        text:
+
+stop_media:
+  name: Stop media
+  description: Stop the DLNA session; the projector returns to its own idle display.
+  fields:
+    host:
+      name: Host
+      description: Target a specific device when more than one is configured.
+      required: false
+      example: 192.168.1.50
+      selector:
+        text:
+
+screenshot:
+  name: Screenshot
+  description: Capture the projector screen and save the JPEG under www. One capture at a time.
+  fields:
+    host:
+      name: Host
+      description: Target a specific device when more than one is configured.
+      required: false
+      example: 192.168.1.50
+      selector:
+        text:
+
+open_app:
+  name: Open app
+  description: Launch an app that is installed on the device.
+  fields:
+    package:
+      name: Package
+      description: Android package name.
+      required: false
+      example: com.xgimi.vbeat
+      selector:
+        text:
+    app:
+      name: App
+      description: App name as shown in the app picker.
+      required: false
+      example: QQ Music
+      selector:
+        text:
+    host:
+      name: Host
+      description: Target a specific device when more than one is configured.
+      required: false
+      example: 192.168.1.50
+      selector:
+        text:

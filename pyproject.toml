@@ -1,0 +1,24 @@
+[project]
+name = "xgimi-sunlight"
+version = "1.0.0"
+license = { text = "MIT" }
+
+[tool.ruff]
+target-version = "py313"
+line-length = 88
+
+[tool.ruff.lint]
+select = ["F", "I", "UP", "B", "SIM", "RET", "C4", "PIE", "RUF"]
+ignore = [
+    "RUF001",
+    "RUF002",
+    "RUF003",
+    "RUF012",
+]
+
+[tool.ruff.format]
+quote-style = "double"
+
+[tool.pyright]
+pythonVersion = "3.13"
+typeCheckingMode = "basic"

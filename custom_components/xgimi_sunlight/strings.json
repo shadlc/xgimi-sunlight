@@ -1,0 +1,286 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "XGIMI Sunlight",
+        "description": "Enter the LAN address of your XGIMI Sunlight lamp. Home Assistant must be on the same network segment as the device.",
+        "data": {
+          "host": "Host",
+          "name": "Name"
+        },
+        "data_description": {
+          "host": "For example 192.168.1.50",
+          "name": "The name shown in Home Assistant"
+        }
+      },
+      "reconfigure": {
+        "title": "Update XGIMI Sunlight",
+        "description": "Change the address or the name of {name}.",
+        "data": {
+          "host": "Host",
+          "name": "Name"
+        },
+        "data_description": {
+          "host": "For example 192.168.1.50",
+          "name": "The name shown in Home Assistant"
+        }
+      }
+    },
+    "error": {
+      "invalid_host": "The host cannot be empty",
+      "already_configured": "This device is already configured"
+    },
+    "abort": {
+      "already_configured": "This device is already configured"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "XGIMI Sunlight options",
+        "description": "Entity layout for {host}. Saving reloads the integration.",
+        "data": {
+          "light_shape": "Lamp entity layout",
+          "default_lamp_mode": "Default lamp mode",
+          "hold_response_port": "Reserve UDP 16751 for command replies"
+        },
+        "data_description": {
+          "light_shape": "Split = one lamp entity per mode (custom / rhythm / daylight / movie); Single = one lamp with an effect picker",
+          "default_lamp_mode": "Only used by the single lamp layout when no effect is given",
+          "hold_response_port": "The device sends command replies to UDP 16751. Disable this only if another app on the same host needs that port — you will lose command confirmation and the repair issue about rejected commands."
+        }
+      }
+    }
+  },
+  "entity": {
+    "button": {
+      "key_press": {
+        "name": "Press"
+      },
+      "key_hold": {
+        "name": "Hold"
+      },
+      "auto_focus": {
+        "name": "Auto focus"
+      },
+      "screenshot": {
+        "name": "Screenshot"
+      },
+      "settings": {
+        "name": "Settings"
+      },
+      "home": {
+        "name": "Home"
+      },
+      "menu": {
+        "name": "Menu"
+      },
+      "back": {
+        "name": "Back"
+      },
+      "power_menu": {
+        "name": "Power menu"
+      },
+      "mute": {
+        "name": "Mute"
+      },
+      "screen_off": {
+        "name": "Screen off"
+      },
+      "listen_music": {
+        "name": "Listen to music"
+      },
+      "manual_focus": {
+        "name": "Manual focus"
+      },
+      "clean_memory": {
+        "name": "Clean memory"
+      },
+      "reboot": {
+        "name": "Reboot"
+      },
+      "check_update": {
+        "name": "Check for updates"
+      },
+      "open_app": {
+        "name": "Open app"
+      },
+      "exit_music": {
+        "name": "Exit music mode"
+      },
+      "send_command": {
+        "name": "Send command"
+      },
+      "play_media": {
+        "name": "Play media"
+      },
+      "stop_media": {
+        "name": "Stop media"
+      }
+    },
+    "camera": {
+      "screen": {
+        "name": "Screen"
+      }
+    },
+    "light": {
+      "lamp_custom": {
+        "name": "Custom lamp"
+      },
+      "lamp_daylight": {
+        "name": "Daylight lamp"
+      },
+      "lamp_rhythm": {
+        "name": "Rhythm lamp"
+      },
+      "lamp_movie": {
+        "name": "Movie lamp"
+      }
+    },
+    "number": {
+      "volume": {
+        "name": "Volume"
+      }
+    },
+    "remote": {
+      "remote": {
+        "name": "Remote"
+      }
+    },
+    "select": {
+      "key_select": {
+        "name": "Remote key"
+      },
+      "app": {
+        "name": "App"
+      }
+    },
+    "switch": {
+      "projector": {
+        "name": "Projector"
+      },
+      "lamp": {
+        "name": "Lamp"
+      }
+    },
+    "text": {
+      "command": {
+        "name": "Custom command"
+      },
+      "media": {
+        "name": "Media"
+      }
+    }
+  },
+  "services": {
+    "send_command": {
+      "name": "Send custom command",
+      "description": "Hand a natural-language phrase to the device voice assistant, e.g. to reach features the integration does not model.",
+      "fields": {
+        "command": {
+          "name": "Command",
+          "description": "Natural-language command text."
+        },
+        "host": {
+          "name": "Host",
+          "description": "Target device IP. Can be omitted when only one device is configured."
+        },
+        "wait_response": {
+          "name": "Wait for response",
+          "description": "Wait for the device reply to learn whether the assistant accepted the command."
+        }
+      }
+    },
+    "press_key": {
+      "name": "Press key",
+      "description": "Press a key on the remote.",
+      "fields": {
+        "key": {
+          "name": "Key",
+          "description": "Name of the key to press."
+        },
+        "hold_secs": {
+          "name": "Hold duration",
+          "description": "When greater than 0 the key is sent as press-and-hold."
+        },
+        "host": {
+          "name": "Host",
+          "description": "Target device IP. Can be omitted when only one device is configured."
+        }
+      }
+    },
+    "play_media": {
+      "name": "Play media",
+      "description": "Play media on the device through its DLNA renderer. Leave the source empty to replay the last item.",
+      "fields": {
+        "url": {
+          "name": "Media URL",
+          "description": "Public address the device should download."
+        },
+        "path": {
+          "name": "Local file",
+          "description": "File on the Home Assistant host, served with a random token. Absolute, or media/… / www/… relative."
+        },
+        "host": {
+          "name": "Host",
+          "description": "Target device IP. Can be omitted when only one device is configured."
+        }
+      }
+    },
+    "stop_media": {
+      "name": "Stop media",
+      "description": "Stop the DLNA session; the projector returns to its own idle display.",
+      "fields": {
+        "host": {
+          "name": "Host",
+          "description": "Target device IP. Can be omitted when only one device is configured."
+        }
+      }
+    },
+    "screenshot": {
+      "name": "Screenshot",
+      "description": "Capture the projector screen and save the JPEG under www. One capture at a time.",
+      "fields": {
+        "host": {
+          "name": "Host",
+          "description": "Target device IP. Can be omitted when only one device is configured."
+        }
+      }
+    },
+    "open_app": {
+      "name": "Open app",
+      "description": "Launch an app that is installed on the device.",
+      "fields": {
+        "package": {
+          "name": "Package",
+          "description": "Package name, for example com.xgimi.vbeat."
+        },
+        "app": {
+          "name": "App",
+          "description": "App name as shown in the app picker."
+        },
+        "host": {
+          "name": "Host",
+          "description": "Target device IP. Can be omitted when only one device is configured."
+        }
+      }
+    }
+  },
+  "issues": {
+    "response_port_unavailable": {
+      "title": "XGIMI command replies are unavailable",
+      "description": "Home Assistant could not bind UDP port 16751, which {host} uses to acknowledge commands.\n\nCommands are still sent, but the integration cannot tell whether the device accepted or rejected them. This usually means the official XGIMI app or another Home Assistant instance is already using that port.\n\nFree the port and reload the integration to restore command confirmation."
+    }
+  },
+  "exceptions": {
+    "no_app": {
+      "message": "Pick an app from the list first."
+    },
+    "no_command": {
+      "message": "Type something in the command field first."
+    },
+    "no_media": {
+      "message": "Type a URL or a path in the media field first, or play something once so it can be replayed."
+    }
+  }
+}

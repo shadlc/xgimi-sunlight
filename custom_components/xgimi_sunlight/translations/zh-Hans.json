@@ -1,0 +1,286 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "极米神灯",
+        "description": "填写极米神灯的局域网 IP。Home Assistant 需与设备处于同一网段。",
+        "data": {
+          "host": "设备 IP",
+          "name": "设备名称"
+        },
+        "data_description": {
+          "host": "例如 192.168.1.50",
+          "name": "在 Home Assistant 中显示的名称"
+        }
+      },
+      "reconfigure": {
+        "title": "更新极米神灯",
+        "description": "修改 {name} 的地址或名称。",
+        "data": {
+          "host": "主机地址",
+          "name": "名称"
+        },
+        "data_description": {
+          "host": "例如 192.168.1.50",
+          "name": "在 Home Assistant 中显示的名称"
+        }
+      }
+    },
+    "error": {
+      "invalid_host": "IP 地址不能为空",
+      "already_configured": "该设备已被配置"
+    },
+    "abort": {
+      "already_configured": "该设备已配置"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "极米神灯设置",
+        "description": "配置 {host} 的实体形态。保存后集成会自动重载。",
+        "data": {
+          "light_shape": "灯实体形态",
+          "default_lamp_mode": "默认灯光模式",
+          "hold_response_port": "独占 UDP 16751 以接收指令应答"
+        },
+        "data_description": {
+          "light_shape": "分开 = 每种模式一个灯实体（自定义 / 节律光 / 日光 / 观影）；单灯体 = 一个灯用效果切换四种模式",
+          "default_lamp_mode": "仅「单灯体」形态生效：未指定效果时使用",
+          "hold_response_port": "设备的指令应答会发往 UDP 16751。只有在同一台主机的其他程序必须占用该端口时才关闭 —— 关闭后将失去指令确认与拒绝检测。"
+        }
+      }
+    }
+  },
+  "entity": {
+    "button": {
+      "key_press": {
+        "name": "点按"
+      },
+      "key_hold": {
+        "name": "长按"
+      },
+      "auto_focus": {
+        "name": "自动对焦"
+      },
+      "screenshot": {
+        "name": "截图"
+      },
+      "settings": {
+        "name": "设置"
+      },
+      "home": {
+        "name": "主页"
+      },
+      "menu": {
+        "name": "菜单"
+      },
+      "back": {
+        "name": "返回"
+      },
+      "power_menu": {
+        "name": "电源菜单"
+      },
+      "mute": {
+        "name": "静音"
+      },
+      "screen_off": {
+        "name": "熄屏"
+      },
+      "listen_music": {
+        "name": "听歌模式"
+      },
+      "manual_focus": {
+        "name": "手动对焦"
+      },
+      "clean_memory": {
+        "name": "清理内存"
+      },
+      "reboot": {
+        "name": "重启"
+      },
+      "check_update": {
+        "name": "检查更新"
+      },
+      "open_app": {
+        "name": "打开应用"
+      },
+      "exit_music": {
+        "name": "退出听歌模式"
+      },
+      "send_command": {
+        "name": "发送命令"
+      },
+      "play_media": {
+        "name": "播放媒体"
+      },
+      "stop_media": {
+        "name": "停止播放"
+      }
+    },
+    "camera": {
+      "screen": {
+        "name": "投影画面"
+      }
+    },
+    "light": {
+      "lamp_custom": {
+        "name": "自定义光"
+      },
+      "lamp_daylight": {
+        "name": "日光"
+      },
+      "lamp_rhythm": {
+        "name": "节律光"
+      },
+      "lamp_movie": {
+        "name": "观影光"
+      }
+    },
+    "number": {
+      "volume": {
+        "name": "音量"
+      }
+    },
+    "remote": {
+      "remote": {
+        "name": "遥控器"
+      }
+    },
+    "select": {
+      "key_select": {
+        "name": "遥控按键"
+      },
+      "app": {
+        "name": "应用"
+      }
+    },
+    "switch": {
+      "projector": {
+        "name": "投影仪"
+      },
+      "lamp": {
+        "name": "灯"
+      }
+    },
+    "text": {
+      "command": {
+        "name": "自定义命令"
+      },
+      "media": {
+        "name": "自定义媒体"
+      }
+    }
+  },
+  "services": {
+    "send_command": {
+      "name": "发送自定义指令",
+      "description": "把任意中文自然语言指令交给设备语音助手执行，可覆盖集成未建模的功能。",
+      "fields": {
+        "command": {
+          "name": "指令内容",
+          "description": "中文自然语言指令原文。"
+        },
+        "host": {
+          "name": "设备 IP",
+          "description": "目标设备 IP。只配置了一台设备时可留空。"
+        },
+        "wait_response": {
+          "name": "等待设备应答",
+          "description": "等待设备返回结果，用于判断语音助手是否接受该指令。"
+        }
+      }
+    },
+    "press_key": {
+      "name": "发送按键",
+      "description": "按下遥控器上的某个按键。",
+      "fields": {
+        "key": {
+          "name": "按键",
+          "description": "要按下的按键名称。"
+        },
+        "hold_secs": {
+          "name": "长按时长",
+          "description": "大于 0 时按「长按」方式发送。"
+        },
+        "host": {
+          "name": "设备 IP",
+          "description": "目标设备 IP。只配置了一台设备时可留空。"
+        }
+      }
+    },
+    "play_media": {
+      "name": "播放媒体",
+      "description": "通过设备的 DLNA 渲染器播放媒体。不填来源时重播上次的内容。",
+      "fields": {
+        "url": {
+          "name": "媒体地址",
+          "description": "设备要下载的公开地址。"
+        },
+        "path": {
+          "name": "本地文件",
+          "description": "Home Assistant 主机上的文件，用随机令牌交给设备下载。可写绝对路径，或 media/… 、www/… 开头的相对路径。"
+        },
+        "host": {
+          "name": "主机",
+          "description": "只配置了一个设备时可以省略。"
+        }
+      }
+    },
+    "stop_media": {
+      "name": "停止播放",
+      "description": "停止播放，投影仪回到自己的待机画面。",
+      "fields": {
+        "host": {
+          "name": "主机",
+          "description": "只配置了一个设备时可以省略。"
+        }
+      }
+    },
+    "screenshot": {
+      "name": "截图",
+      "description": "抓取投影画面并把 JPEG 存到 www 目录；同一时间只会执行一次。",
+      "fields": {
+        "host": {
+          "name": "主机",
+          "description": "只配置了一个设备时可以省略。"
+        }
+      }
+    },
+    "open_app": {
+      "name": "打开应用",
+      "description": "启动设备上已安装的应用。",
+      "fields": {
+        "package": {
+          "name": "Package",
+          "description": "包名，例如 com.xgimi.vbeat。"
+        },
+        "app": {
+          "name": "App",
+          "description": "应用选择器里显示的名称。"
+        },
+        "host": {
+          "name": "主机",
+          "description": "只配置了一个设备时可以省略。"
+        }
+      }
+    }
+  },
+  "issues": {
+    "response_port_unavailable": {
+      "title": "极米神灯指令应答不可用",
+      "description": "Home Assistant 无法绑定 UDP 端口 16751，而 {host} 通过该端口确认指令。\n\n指令仍会下发，但集成无法判断设备是接受还是拒绝。通常是因为官方「无屏助手」App 或另一个 Home Assistant 实例已占用该端口。\n\n释放端口后重载集成即可恢复指令确认。"
+    }
+  },
+  "exceptions": {
+    "no_app": {
+      "message": "请先在下拉框里选择一个应用。"
+    },
+    "no_command": {
+      "message": "请先在「自定义命令」里输入内容。"
+    },
+    "no_media": {
+      "message": "请先在「地址或路径」里填入内容，或先成功播放一次，这样之后可以直接重播。"
+    }
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "domain": "xgimi_sunlight",
+  "name": "XGIMI Sunlight",
+  "codeowners": [
+    "@shadlc"
+  ],
+  "config_flow": true,
+  "dependencies": [
+    "http"
+  ],
+  "documentation": "https://github.com/shadlc/xgimi-sunlight",
+  "integration_type": "device",
+  "iot_class": "local_push",
+  "issue_tracker": "https://github.com/shadlc/xgimi-sunlight/issues",
+  "loggers": [
+    "custom_components.xgimi_sunlight"
+  ],
+  "requirements": [],
+  "version": "1.0.0"
+}
